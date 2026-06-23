@@ -7,6 +7,11 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using StackExchange.Redis;
 
+// Composition root. IRedisCacheService is registered as Transient rather than Singleton because
+// it holds no per-instance state of its own (the IDatabase handle is a thin, thread-safe wrapper
+// over the shared IConnectionMultiplexer); the multiplexer itself is the expensive resource and is
+// the thing actually registered as a Singleton, per Redis client guidance against opening a
+// connection per operation.
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
